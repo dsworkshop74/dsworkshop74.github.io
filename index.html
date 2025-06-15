@@ -1,0 +1,184 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Rao - Data Scientist</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#achievements">Achievements</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section id="hero">
+        <h1>Alex Rao</h1>
+        <p>Data Scientist | Machine Learning Enthusiast | Open Source Contributor</p>
+        <img src="profile.jpg" alt="Alex Rao">
+    </section>
+    
+    <section id="about">
+        <h2>About Me</h2>
+        <p>Hi! I'm Alex Rao, a passionate Data Scientist with a strong background in statistical analysis, machine learning, and model deployment. I love transforming data into actionable insights and building intelligent systems that solve real-world problems.</p>
+    </section>
+    
+    <section id="skills">
+        <h2>Skills</h2>
+        <div class="skills-grid">
+            <div class="skill-category">
+                <i class="fas fa-code"></i>
+                <h3>Languages</h3>
+                <p>Python | C++ | SQL | R</p>
+            </div>
+            <div class="skill-category">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Data Science & Analytics</h3>
+                <p>Exploratory Data Analysis (EDA) | Data Cleaning | Feature Engineering | A/B Testing | Statistics</p>
+            </div>
+            <div class="skill-category">
+                <i class="fas fa-brain"></i>
+                <h3>Machine Learning & AI</h3>
+                <p>scikit-learn | XGBoost | LightGBM | TensorFlow | Keras | OpenCV</p>
+            </div>
+            <div class="skill-category">
+                <i class="fas fa-chart-line"></i>
+                <h3>Data Visualization</h3>
+                <p>Matplotlib | Seaborn | Plotly | Tableau | Power BI</p>
+            </div>
+            <div class="skill-category">
+                <i class="fas fa-database"></i>
+                <h3>Big Data & Cloud</h3>
+                <p>Spark | AWS S3 | Google BigQuery | Snowflake</p>
+            </div>
+            <div class="skill-category">
+                <i class="fas fa-tools"></i>
+                <h3>Tools & IDEs</h3>
+                <p>Jupyter Notebook | VS Code | Git | Docker</p>
+            </div>
+        </div>
+    </section>
+    
+    <section id="experience">
+        <h2>Work Experience</h2>
+        <div class="experience-item">
+            <h3>Data Scientist — XYZ Analytics Pvt Ltd</h3>
+            <p>Jan 2023 – Present | Bengaluru, India</p>
+            <ul>
+                <li>Built an automated churn prediction system for telecom clients using XGBoost, resulting in a 15% reduction in customer churn.</li>
+                <li>Developed a time-series sales forecasting model using SARIMA and Prophet, increasing forecast accuracy by 22%.</li>
+                <li>Designed and deployed a customer segmentation pipeline using clustering algorithms for targeted marketing strategies.</li>
+            </ul>
+        </div>
+        <div class="experience-item">
+            <h3>Junior Data Analyst — ABC Corp</h3>
+            <p>Jul 2021 – Dec 2022 | Remote</p>
+            <ul>
+                <li>Cleaned and processed large datasets with Pandas and SQL, reducing ETL pipeline latency by 30%.</li>
+                <li>Conducted in-depth EDA to identify product usage trends, leading to a new upsell strategy with a 10% increase in revenue.</li>
+                <li>Collaborated with cross-functional teams to present insights via Tableau dashboards.</li>
+            </ul>
+        </div>
+    </section>
+    
+    <section id="projects">
+        <h2>Projects</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <h3>Movie Recommendation System</h3>
+                <p>Built a content-based recommender using cosine similarity on TF-IDF vectors of movie metadata.</p>
+                <p>Tools: Python, Pandas, scikit-learn, Streamlit</p>
+                <a href="https://github.com/alexrao/movie-recommender">View on GitHub</a>
+            </div>
+            <div class="project-card">
+                <h3>Credit Risk Modeling</h3>
+                <p>Developed a logistic regression and gradient boosting model to predict loan default probability.</p>
+                <p>Tools: EDA, Imbalanced-learn, XGBoost, SHAP</p>
+                <a href="https://github.com/alexrao/credit-risk-model">View on GitHub</a>
+            </div>
+            <div class="project-card">
+                <h3>Climate Change Dashboard</h3>
+                <p>Built a web app dashboard to visualize CO₂ emissions and climate data over the past century.</p>
+                <p>Tools: Plotly, Dash, Pandas, GeoJSON</p>
+                <a href="https://github.com/alexrao/climate-dashboard">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+    
+    <section id="achievements">
+        <h2>Achievements & Certifications</h2>
+        <ul>
+            <li>Top 1% in Kaggle Titanic ML Challenge</li>
+            <li>Google Data Analytics Certificate – Coursera</li>
+            <li>Deep Learning Specialization – Andrew Ng (Coursera)</li>
+            <li>Published a blog on Medium: "Improving Model Accuracy with Feature Selection Techniques"</li>
+        </ul>
+    </section>
+    
+    <section id="contact">
+        <h2>Contact</h2>
+        <p>Feel free to reach out via email or connect on social media.</p>
+        <a href="mailto:alexrao@example.com">alexrao@example.com</a>
+        <div class="social-links">
+            <a href="https://linkedin.com/in/alexrao">LinkedIn</a>
+            <a href="https://github.com/alexrao">GitHub</a>
+            <a href="https://medium.com/@alexrao">Medium</a>
+        </div>
+    </section>
+    
+    <footer>
+        <p>&copy; 2025 Alex Rao. All rights reserved.</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
